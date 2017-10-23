@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <assert.h>
+#include "binary_image.h"
+
+//#define LIB_DEBUG
+
+int_least8_t main();
+static void print_queue(const queue_t* queue);
+void static print_matrix(const dot_t** matrix, const int_least8_t width, const int_least8_t height);
+
+int_least8_t main()
+{
+	FILE* file_descriptor;
+	file_descriptor = fopen("input.txt", "r");
+	int_least8_t width = 0;
+	int_least8_t height = 0;
+
+
+	int_least8_t num = check_matrix_size(file_descriptor, &width, &height);
+	printf("Return val: %"PRIdLEAST8", W: %"PRIdLEAST8", H: %"PRIdLEAST8"\n", num, width, height);
+
+	if(num == TRUE){
+		dot_t** matrix = load_matrix(file_descriptor, width, height);
+		print_matrix(matrix, width, height);
+
+		free_matrix(matrix, width);
+	}
+
+	printf("End!\n");
+
+#ifdef LIB_DEBUG
+	queue_t* queue = create_queue();
+
+	assert(is_empty(queue));
+
+	int_least8_t num1 = 5;
+	int_least8_t num2 = 6;
+	int_least8_t num3 = 7;
+	int_least8_t num4 = 8;
+	int_least8_t num5 = 9;
+
+
+	printf("Queue is empty: %"PRIdLEAST8"\n", is_empty(queue));
+
+	node_t* node = create_node((void*)&num1, sizeof(num));
+	enqueue(queue, node);
+
+	node = create_node((void*)&num2, sizeof(num));
+	enqueue(queue, node);
+	node = create_node((void*)&num3, sizeof(num));
+	enqueue(queue, node);
+	node = create_node((void*)&num4, sizeof(num));
+	enqueue(queue, node);
+	node = create_node((void*)&num5, sizeof(num));
+	enqueue(queue, node);
+
+	printf("Queue is empty: %"PRIdLEAST8"\n", is_empty(queue));
+
+	print_queue(queue);
+
+	empty_queue(queue);
+	assert(is_empty(queue));
+	printf("Queue is empty: %"PRIdLEAST8"\n", is_empty(queue));
+
+
+	delete_queue(queue);
+#endif
+
+	return 0;
+}
+
+static void print_queue(const queue_t* queue)
+{
+	printf("\nPrinting queue\n");
+	if(is_empty(queue) == FALSE)
+	{
+		node_t* temp = queue->head;
+		int_least8_t* temp_struct = (int_least8_t*)temp->value;
+		while(temp != NULL){
+			temp_struct = (int_least8_t*)temp->value;
+			printf("%"PRIdLEAST8"\n", *temp_struct);
+			temp = temp->next;
+		}
+	}
+	else
+	{
+		printf("\nQueue is empty!\n");
+	}
+}
+
+void static print_matrix(const dot_t** matrix, const int_least8_t width, const int_least8_t height)
+{
+	int_least8_t x;
+	int_least8_t y;
+
+	for(y = 0; y < height; y++)
+	{
+		for(x = 0; x < width; x++)
+		{
+			printf("%"PRIdLEAST8" ", matrix[x][y].value);
+		}
+		printf("\n");
+	}
+}

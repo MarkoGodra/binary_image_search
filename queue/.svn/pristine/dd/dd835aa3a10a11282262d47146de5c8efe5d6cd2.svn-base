@@ -1,0 +1,11 @@
+#include "queue.h"
+
+int_least16_t main(void);
+
+int_least16_t main(void){
+
+	queue_t* queue = create_queue();
+	delete_queue(queue);
+
+	return 0;
+}

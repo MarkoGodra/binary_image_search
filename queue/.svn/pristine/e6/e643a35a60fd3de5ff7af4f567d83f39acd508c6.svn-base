@@ -1,0 +1,26 @@
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#define FALSE 0
+#define TYPE int_least32_t
+
+typedef struct node_st
+{
+	TYPE* value;
+	struct node_st* next;
+	struct node_st* prev;
+}node_t;
+
+typedef struct
+ {
+	node_t* head;
+	node_t* tail;
+ }queue_t;
+
+queue_t* create_queue();
+void delete_queue(queue_t* queue);
+void enqueu(queue_t* queue, node_t* node);
+queue_t rear(queue_t* queue);
+queue_t front(queue_t* queue);
+int_least8_t is_full(queue_t* queue);

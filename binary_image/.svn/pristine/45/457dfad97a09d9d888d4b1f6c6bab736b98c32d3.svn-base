@@ -1,0 +1,22 @@
+#ifndef __BINARY_IMAGE_H__
+#define __BINARY_IMAGE_H__
+
+#include <inttypes.h>
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+
+extern const int_least8_t TRUE;
+extern const int_least8_t FALSE;
+
+typedef struct dot
+{
+	int_least8_t value;
+	int_least8_t visited;
+	int_least8_t fault;
+}dot_t;
+
+int_least8_t** load_matrix(const FILE* fp);
+int_least8_t check_matrix_size(const FILE* fp, int_least8_t* width, int_least8_t* height);
+
+#endif

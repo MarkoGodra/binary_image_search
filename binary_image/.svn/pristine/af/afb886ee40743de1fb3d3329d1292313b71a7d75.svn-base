@@ -1,0 +1,91 @@
+#include "binary_image.h"
+
+const int_least8_t TRUE;
+const int_least8_t FALSE;
+
+static int_least8_t get_string_size(const char str[]);
+
+int_least8_t** load_matrix(FILE* fp, const int_least8_t width, const int_least8_t height)
+{
+	int_least8_t** matrix;
+	int_least8_t i;
+	int_least8_t j;
+	char ch;
+
+	rewind(fp);
+
+	/* Allocate memory for matrix, depending on input text size */
+	matrix = (int_least8_t**)malloc(width * sizeof(int_least8_t*));
+	for(i = 0; i < width; i++)
+	{
+		matrix[i] = (int_least8_t*)malloc(height * sizeof(int_least8_t));
+	}
+
+	i = 0;
+	j = 0;
+	ch = fgetc(fp);
+	while(ch != EOF)
+	{
+		if((ch != '\n') && (ch != 0)) //If regular character put it into matrix
+		{
+			matrix[i][j] = ch - '0'; //Safe conversion, standard section 5.2.1, paragraph 2/3
+			i++;
+		}
+		else // If end of line, go to next line of matrix
+		{
+			j++;
+			i = 0;
+		}
+		ch = fgetc(fp);
+	}
+
+	return matrix;
+}
+
+int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* height)
+{
+	char row[INT_LEAST8_MAX] = {0};
+	int_least8_t ret_val = TRUE;
+	int_least8_t size_of_row;
+
+	rewind(fp);
+	char ch = fgetc(fp);
+
+	while(ch != '\n')
+	{
+		(*width)++;
+		ch = fgetc(fp);
+	}
+
+	rewind(fp);
+
+	while(fgets(row, INT_LEAST8_MAX, fp))
+	{
+		(*height)++;
+		if((size_of_row = get_string_size(row)) != *width)
+		{
+			ret_val = FALSE;
+			*width = -1;
+			*height = -1;
+			break;
+		}
+	}
+
+	height++; //Increment height one last time, because it hit eof
+
+	return ret_val;
+}
+
+static int_least8_t get_string_size(const char str[]) //Retruns length of single row
+{
+	int_least8_t size = 0;
+
+	const char* ptr = str;
+	while((*ptr != '\n') && (*ptr != '\0'))
+	{
+		size++;
+		ptr++;
+	}
+
+	return size;
+}

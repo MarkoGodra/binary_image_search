@@ -1,0 +1,27 @@
+#include "queue.h"
+
+queue_t* create_queue()
+{
+	queue_t* queue = (queue_t*)malloc(sizeof(queue_t));
+	queue->head = NULL;
+	queue->tail = NULL;
+
+	return queue;
+}
+
+void delete_queue(queue_t* queue)
+{
+	if(((queue->head == NULL) && (queue->tail == NULL)) == FALSE)
+	{
+		node_t* current;
+		while(queue->head != NULL)
+		{
+			current = queue->head;
+			queue->head = current->next;
+			free(current);
+		}
+	}
+
+	free(queue);
+	return;
+}

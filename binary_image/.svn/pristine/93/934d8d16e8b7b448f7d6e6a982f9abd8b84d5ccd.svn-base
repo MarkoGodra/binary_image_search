@@ -1,0 +1,42 @@
+#include "binary_image.h"
+
+const int_least8_t TRUE;
+const int_least8_t FALSE;
+
+int_least8_t** load_matrix(const FILE* fp)
+{
+//	int_least8_t** matrix;
+//	int_least8_t counting_flag = 1;
+//	int_least32_t width;
+//	int_least32_t height;
+//	char ch;
+//
+//
+//	return matrix;
+}
+
+int_least8_t check_matrix_size(const FILE* fp, int_least8_t* width, int_least8_t* height)
+{
+	char row[INT_LEAST8_MAX] = {0};
+	char ch = fgetc(fp);
+	int_least8_t ret_val = TRUE;
+
+	while(ch != '\n')
+	{
+		(*width)++;
+	}
+
+	while(fgets(row, INT_LEAST8_MAX, fp))
+	{
+		(*height)++;
+		if(strlen(row) != *width)
+		{
+			ret_val = FALSE;
+			*width = -1;
+			*height = -1;
+			break;
+		}
+	}
+
+	return ret_val;
+}

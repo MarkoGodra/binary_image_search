@@ -1,0 +1,97 @@
+#include "queue.h"
+
+const int_least8_t TRUE = 1;
+const int_least8_t FALSE = 0;
+
+queue_t* create_queue()
+{
+	queue_t* queue = (queue_t*)malloc(sizeof(queue_t));
+	queue->head = NULL;
+	queue->tail = NULL;
+
+	return queue;
+}
+
+void delete_queue(queue_t* queue)
+{
+	if(((queue->head == NULL) && (queue->tail == NULL)) == FALSE)
+	{
+		node_t* current;
+		while(queue->head != NULL)
+		{
+			current = queue->head;
+			queue->head = current->next;
+			free(current);
+		}
+	}
+
+	free(queue);
+	return;
+}
+
+void enqueue(queue_t* queue, node_t* node)
+{
+	if(((queue->head == NULL) && (queue->tail == NULL)) == FALSE)
+	{
+		node->next = queue->head;
+		(queue->head)->prev = node;
+		queue->head = node;
+	}
+	else
+	{
+		queue->head = node;
+		queue->tail = node;
+	}
+}
+
+node_t dequeue(queue_t* queue)
+{
+	node_t node; //Create node for return
+	node_t* temp = queue->tail; //Create temp node to hold address of tail
+
+	if(queue->head != queue->tail)
+	{
+		node.value = (queue->tail)->value;
+		node.next = NULL;
+		node.prev = NULL;
+		queue->tail = temp->prev; //Return tail to previous element
+		(queue->tail)->next = NULL; //Set tail next to null (New end of list)
+		free(temp); //Free ex-tail
+	}
+	else if(queue->head == queue->tail) //Last element of queue
+	{
+		node.value = (queue->tail)->value;
+		node.next = NULL;
+		node.prev = NULL;
+		queue->head = NULL;
+		queue->tail = NULL;
+		free(temp); //Free ex-tail
+	}
+
+	return node;
+}
+
+int_least8_t is_empty(const queue_t* queue)
+{
+	int_least8_t return_val;
+	if((queue->head == NULL) && (queue->tail == NULL))
+	{
+		return_val = TRUE;
+	}
+	else
+	{
+		return_val = FALSE;
+	}
+
+	return return_val;
+}
+
+node_t* rear(const queue_t* queue)
+{
+	return queue->head;
+}
+
+node_t* front(const queue_t* queue)
+{
+	return queue->tail;
+}

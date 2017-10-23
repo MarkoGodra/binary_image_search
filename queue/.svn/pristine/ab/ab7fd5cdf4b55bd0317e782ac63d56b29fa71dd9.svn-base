@@ -1,0 +1,9 @@
+#include <inttypes.h>
+#include "queue.h"
+
+int_least16_t main(void);
+
+int_least16_t main(void){
+
+	return 0;
+}

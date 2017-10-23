@@ -1,0 +1,130 @@
+#include "queue.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+typedef struct dot
+{
+	int_least8_t value;
+	int_least8_t visited;
+	int_least8_t fault;
+}dot_t;
+
+int_least16_t main(void);
+static node_t* create_node(dot_t* val);
+static void print_queue(const queue_t* queue);
+
+
+int_least16_t main(void){
+
+	queue_t* queue = create_queue();
+	assert(is_empty(queue));
+	int_least8_t ret_val = is_empty(queue);
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	dot_t d1 = {0, 0, 1};
+	dot_t d2 = {1, 0, 1};
+	dot_t d3 = {2, 0, 1};
+	dot_t d4 = {3, 0, 1};
+
+	node_t* node = create_node(&d1);
+
+	enqueue(queue, node);
+
+	ret_val = is_empty(queue);
+	assert(!is_empty(queue));
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	node = create_node(&d2);
+	enqueue(queue, node);
+
+	node = create_node(&d3);
+	enqueue(queue, node);
+
+	node = create_node(&d4);
+	enqueue(queue, node);
+
+	print_queue(queue);
+
+	assert(!is_empty(queue));
+
+	node_t catch_node = dequeue(queue);
+	dot_t* val_hodler = (dot_t*)catch_node.value;
+
+	printf("Caught node: %"PRIdLEAST8":%"PRIdLEAST8":%"PRIdLEAST8"", val_hodler->value, val_hodler->visited, val_hodler->fault);
+
+	print_queue(queue);
+
+	assert(!is_empty(queue));
+	catch_node = dequeue(queue);
+	val_hodler = (dot_t*)catch_node.value;
+	printf("Caught node: %"PRIdLEAST8":%"PRIdLEAST8":%"PRIdLEAST8"", val_hodler->value, val_hodler->visited, val_hodler->fault);
+
+	print_queue(queue);
+
+	assert(!is_empty(queue));
+	catch_node = dequeue(queue);
+	val_hodler = (dot_t*)catch_node.value;
+	printf("Caught node: %"PRIdLEAST8":%"PRIdLEAST8":%"PRIdLEAST8"", val_hodler->value, val_hodler->visited, val_hodler->fault);
+
+	print_queue(queue);
+
+	assert(!is_empty(queue));
+	catch_node = dequeue(queue);
+	val_hodler = (dot_t*)catch_node.value;
+	printf("Caught node: %"PRIdLEAST8":%"PRIdLEAST8":%"PRIdLEAST8"", val_hodler->value, val_hodler->visited, val_hodler->fault);
+
+	print_queue(queue);
+
+	printf("Queue empty: %"PRIdLEAST8"\n", is_empty(queue));
+
+	node = create_node(&d1);
+	enqueue(queue, node);
+	node = create_node(&d2);
+	enqueue(queue, node);
+	node = create_node(&d3);
+	enqueue(queue, node);
+	node = create_node(&d4);
+	enqueue(queue, node);
+
+	print_queue(queue);
+
+	printf("Queue empty: %"PRIdLEAST8"\n", is_empty(queue));
+	printf("Emptying queue\n");
+	empty_queue(queue);
+	printf("Queue empty: %"PRIdLEAST8"\n", is_empty(queue));
+
+	delete_queue(queue);
+
+	printf("End!\n");
+
+	return 0;
+}
+
+static node_t* create_node(dot_t* val)
+{
+	node_t* node = (node_t*)malloc(sizeof(node_t));
+	node->next = NULL;
+	node->prev = NULL;
+	node->value = (void*)val;
+	return node;
+}
+
+static void print_queue(const queue_t* queue)
+{
+	printf("\nPrinting queue\n");
+	if(is_empty(queue) == FALSE)
+	{
+		node_t* temp = queue->head;
+		dot_t* temp_struct = (dot_t*)temp->value;
+		while(temp != NULL){
+			temp_struct = temp->value;
+			printf("%d : %d : %d\n", temp_struct->value, temp_struct->visited, temp_struct->fault);
+			temp = temp->next;
+		}
+	}
+	else
+	{
+		printf("\nQueue is empty!\n");
+	}
+}

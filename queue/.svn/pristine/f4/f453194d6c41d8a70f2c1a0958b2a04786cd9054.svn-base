@@ -1,0 +1,29 @@
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+extern const int_least8_t FALSE;
+extern const int_least8_t TRUE;
+
+#define TYPE int_least32_t
+
+typedef struct node_st
+{
+	TYPE* value;
+	struct node_st* next;
+	struct node_st* prev;
+}node_t;
+
+typedef struct
+ {
+	node_t* head;
+	node_t* tail;
+ }queue_t;
+
+queue_t* create_queue();
+void delete_queue(queue_t* queue);
+void enqueue(queue_t* queue, node_t* node);
+node_t dequeue(queue_t* queue);
+node_t* rear(const queue_t* queue); //Peak at rear
+node_t* front(const queue_t* queue); //Peak at front
+int_least8_t is_empty(const queue_t* queue);

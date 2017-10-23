@@ -1,0 +1,73 @@
+#include "queue.h"
+
+int_least16_t main(void);
+static node_t* create_node(TYPE val);
+static void print_list(queue_t* queue);
+
+
+int_least16_t main(void){
+
+	queue_t* queue = create_queue();
+	int_least8_t ret_val = is_empty(queue);
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	node_t* node = create_node(1);
+	enqueue(queue, node);
+
+	ret_val = is_empty(queue);
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	node = create_node(2);
+	enqueue(queue, node);
+
+	node = create_node(3);
+	enqueue(queue, node);
+
+	node = create_node(66);
+	enqueue(queue, node);
+
+	print_list(queue);
+
+	node_t tmp = dequeue(queue);
+
+	printf("List print 2\n");
+	print_list(queue);
+
+	printf("Element: \n");
+	printf("%d\n", tmp.value);
+
+
+	tmp = dequeue(queue);
+	tmp = dequeue(queue);
+
+	ret_val = is_empty(queue);
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	tmp = dequeue(queue);
+	printf("Last element: %d\n", tmp.value);
+
+	ret_val = is_empty(queue);
+	printf("Queue is empty: %"PRIdLEAST8"\n", ret_val);
+
+	delete_queue(queue);
+
+	return 0;
+}
+
+static node_t* create_node(TYPE val)
+{
+	node_t* node = (node_t*)malloc(sizeof(node_t));
+	node->next = NULL;
+	node->prev = NULL;
+	node->value = val;
+	return node;
+}
+
+static void print_list(queue_t* queue)
+{
+	node_t* temp = queue->head;
+	while(temp != NULL){
+		printf("%d\n", temp->value);
+		temp = temp->next;
+	}
+}
