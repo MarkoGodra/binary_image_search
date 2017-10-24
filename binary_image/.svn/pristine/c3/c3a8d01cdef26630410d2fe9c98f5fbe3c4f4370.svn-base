@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include "queue.h"
 
-/* Max width and height of intput matrix are limited to 127 */
 extern const int_least8_t MAX_WIDTH;
 extern const int_least8_t MAX_HEIGHT;
 

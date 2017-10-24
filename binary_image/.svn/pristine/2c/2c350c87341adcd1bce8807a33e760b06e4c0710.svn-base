@@ -87,8 +87,7 @@ int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* heig
 	rewind(fp);
 	char ch = fgetc(fp);
 
-	/* Checks length of first line of text */
-	while((ch != '\n') && (ch != EOF))
+	while(ch != '\n')
 	{
 		width_checker++;
 		ch = fgetc(fp);
@@ -96,11 +95,9 @@ int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* heig
 
 	rewind(fp);
 
-	/* Gets every line of text and checks it length */
 	while(fgets(row, INT_LEAST8_MAX, fp))
 	{
 		height_checker++;
-		/* If length of any line of text (input row) differs size is invalid */
 		if((size_of_row = get_string_size(row)) != width_checker)
 		{
 			ret_val = FALSE;

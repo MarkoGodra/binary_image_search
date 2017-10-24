@@ -1,51 +1,3 @@
-/*
- * Author Student : Marko Dragojevic, RA63-2014
- *
- * Created on 24.10.2017.
- *
- * Solution of longest line in binary image problem, using queue
- *
- * Problem of longest line is to find longest sequence of ones that doesn't contain
- * crossing with other line, or isn't part of double line.
- *
- * For example:
- *
- * 11100
- * 10000
- * 10000
- *
- * This line is valid and it's length is five, but:
- *
- * 11100
- * 11000
- * 10000
- *
- * This sequence is not valid because there is small sequence of double line.
- *
- * For solution implementation, queue structure is used (Implemented as double linked list),
- * and there is no recursion in this solution.
- * Input file needs to be provided in which matrix of ones and zeros is provided. First dimensions of
- * provided matrix are checked. If they are not valid, for example, not all rows are same length.
- * After this inital check, matrix from text file is loaded into internal matrix, which is then extended
- * (extension is done for simplifying purposes of search algorithm) and then is processed. After that length
- * of longest line is returned.
- * If no valid line is found, zero shall be returned.
- *
- * Both modules (queue, and binary_image) are c99 compliant, and both modules aren't misra C compliant,
- * because they both use dynamic memory allocation and freeing.
- *
- * Maximum size of input matrix is 127 x 127
- * Matrix is indexed with int_least8_t for memory saving purposes
- * also size is limited to those valuse because we are working with system with limited resources
- *
- * Queue module is implemented as generic as possible. It can hold any type of values. Standard types or user defined
- * structures. It is implemented as double linked list. In this current use case it holds structures
- * with positions of dots (x,y)
- *
- * Decision to use dynamic memory allocation in binary_image module was made so it can support different sizes of
- * input matrix.
- */
-
 #include <stdio.h>
 #include <assert.h>
 #include "binary_image.h"
@@ -56,11 +8,7 @@ int_least32_t main();
 #ifdef LIB_DEBUG
 static void print_queue(const queue_t* queue);
 #endif
-
-/*
- * Function used for debuging of matrix, walks through matrix and prints values
- */
-static void print_matrix(dot_t** matrix, const int_least8_t width, const int_least8_t height);
+void static print_matrix(dot_t** matrix, const int_least8_t width, const int_least8_t height);
 
 int_least32_t main()
 {
@@ -76,7 +24,6 @@ int_least32_t main()
 
 	if(num == TRUE){
 		matrix = load_matrix(file_descriptor, width, height);
-		assert(matrix != NULL);
 		print_matrix(matrix, width, height);
 
 		matrix = extend_matrix(matrix, &width, &height);

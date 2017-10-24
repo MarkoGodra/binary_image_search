@@ -34,16 +34,9 @@
  * Both modules (queue, and binary_image) are c99 compliant, and both modules aren't misra C compliant,
  * because they both use dynamic memory allocation and freeing.
  *
- * Maximum size of input matrix is 127 x 127
- * Matrix is indexed with int_least8_t for memory saving purposes
- * also size is limited to those valuse because we are working with system with limited resources
- *
  * Queue module is implemented as generic as possible. It can hold any type of values. Standard types or user defined
- * structures. It is implemented as double linked list. In this current use case it holds structures
- * with positions of dots (x,y)
+ * structures. It is implemented as double linked list.
  *
- * Decision to use dynamic memory allocation in binary_image module was made so it can support different sizes of
- * input matrix.
  */
 
 #include <stdio.h>

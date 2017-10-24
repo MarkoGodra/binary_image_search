@@ -1,18 +1,10 @@
 #include "binary_image.h"
 
-const int_least8_t MAX_HEIGHT = 127;
-const int_least8_t MAX_WIDTH = 127;
+const int_least8_t MAX_HEIGHT = 100;
+const int_least8_t MAX_WIDTH = 100;
 
-/* Used for marking size as invalid */
-static const int_least8_t INVALID = -1;
-
-/* Returns size of c string */
 static int_least8_t get_string_size(const char str[]);
-
-/* Checks if input matrix contains something else than '0' or '1' */
-static int_least8_t check_text(FILE* fp);
-
-/* Checks single dot neighbroughs */
+static int_least8_t check_text(FILE* fp); //Checks if input matrix contains something else than '0' or '1'
 static int_least8_t check_fault(dot_t** matrix, int_least8_t x, int_least8_t y);
 
 dot_t** load_matrix(FILE* fp, const int_least8_t width, const int_least8_t height)
@@ -24,8 +16,8 @@ dot_t** load_matrix(FILE* fp, const int_least8_t width, const int_least8_t heigh
 
 	rewind(fp);
 
-	/* If matrix is regulary shaped */
-	if((width != INVALID) && (height != INVALID))
+	//If matrix is regulary shaped
+	if((width != -1) && (height != -1))
 	{
 		/* Allocate memory for matrix, depending on input text size */
 		matrix = (dot_t**)malloc(width * sizeof(dot_t*));
@@ -39,15 +31,14 @@ dot_t** load_matrix(FILE* fp, const int_least8_t width, const int_least8_t heigh
 		ch = fgetc(fp);
 		while(ch != EOF)
 		{
-			if((ch != '\n') && (ch != 0)) /* If regular character put it into matrix */
+			if((ch != '\n') && (ch != 0)) //If regular character put it into matrix
 			{
-				/* Safe conversion, standard section 5.2.1, paragraph 2/3 */
-				matrix[i][j].value = ch - '0';
+				matrix[i][j].value = ch - '0'; //Safe conversion, standard section 5.2.1, paragraph 2/3
 				matrix[i][j].visited = FALSE;
 				matrix[i][j].fault = FALSE;
 				i++;
 			}
-			else /* If end of line, go to next line of matrix */
+			else // If end of line, go to next line of matrix
 			{
 				j++;
 				i = 0;
@@ -64,11 +55,11 @@ dot_t** load_matrix(FILE* fp, const int_least8_t width, const int_least8_t heigh
 void free_matrix(dot_t** matrix, const int_least8_t width)
 {
 	int_least8_t i;
-	for(i = 0; i < width; i++) /* If width is invalid, (This loop won't execute) */
+	for(i = 0; i < width; i++) // If width is invalid, (This loop won't execute)
 	{
 		free(matrix[i]);
 	}
-	free(matrix); /* It will only free matrix ptr */
+	free(matrix); // It will only free matrix ptr
 
 	return;
 }
@@ -82,13 +73,12 @@ int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* heig
 	int_least32_t height_checker = 0;
 	int_least8_t valid_input;
 
-	valid_input = check_text(fp); /* Checks for characters other than 1 or 0 */
+	valid_input = check_text(fp); //Checks for characters other than 1 or 0
 
 	rewind(fp);
 	char ch = fgetc(fp);
 
-	/* Checks length of first line of text */
-	while((ch != '\n') && (ch != EOF))
+	while(ch != '\n')
 	{
 		width_checker++;
 		ch = fgetc(fp);
@@ -96,40 +86,36 @@ int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* heig
 
 	rewind(fp);
 
-	/* Gets every line of text and checks it length */
 	while(fgets(row, INT_LEAST8_MAX, fp))
 	{
 		height_checker++;
-		/* If length of any line of text (input row) differs size is invalid */
 		if((size_of_row = get_string_size(row)) != width_checker)
 		{
 			ret_val = FALSE;
-			width_checker = INVALID;
-			height_checker = INVALID;
+			width_checker = -1;
+			height_checker = -1;
 			break;
 		}
 	}
 
-	/* Change size of input matrix here */
-	if((width_checker > MAX_WIDTH) || (height_checker > MAX_HEIGHT))
+	//TODO: Change size of input matrix here
+	if((width_checker > INT_LEAST8_MAX) || (height_checker > INT_LEAST8_MAX))
 	{
-		width_checker = INVALID;
-		height_checker = INVALID;
+		width_checker = -1;
+		height_checker = -1;
 		ret_val = FALSE;
 	}
 	else
 	{
-		/* After size is checked, check validity of input (only 1s and 0s) */
 		if(valid_input == TRUE)
 		{
-			/* Update values of passed height and width pointers */
 			*height = height_checker;
 			*width = width_checker;
 		}
-		else /* There are some characters other than 0s and 1s */
+		else
 		{
-			*height = INVALID;
-			*width = INVALID;
+			*height = -1;
+			*width = -1;
 			ret_val = FALSE;
 		}
 	}
@@ -137,8 +123,7 @@ int_least8_t check_matrix_size(FILE* fp, int_least8_t* width, int_least8_t* heig
 	return ret_val;
 }
 
-/* Small function for internal use, returns size of string */
-static int_least8_t get_string_size(const char str[])
+static int_least8_t get_string_size(const char str[]) //Retruns length of single row
 {
 	int_least8_t size = 0;
 	const char* ptr = str;
@@ -165,47 +150,30 @@ int_least8_t find_longest_line(dot_t** matrix, const int_least8_t width, const i
 	{
 		for(x = 1; x < width - 1; x++)
 		{
-			/* Save current pixel position */
-			int_least8_t xx = x;
+			int_least8_t xx = x; //Current pixel position
 			int_least8_t yy = y;
 
 			printf("(%"PRIdLEAST8", %"PRIdLEAST8") visited\n", xx, yy);
 
-			/* If dot has value 1 and is visited, it's a point of interest and further checking is required */
 			if((matrix[x][y].value == 1) && (matrix[x][y].visited == FALSE))
 			{
 				printf("(%"PRIdLEAST8", %"PRIdLEAST8") point of interest\n", xx, yy);
-				current_line_len = 0;
+				current_line_len = 0; //Found 1 dot, so it is a line
 
-				/* Neighbroughs checking routine */
+				//While loop, to go through entire line
 				while(1)
 				{
-					/*
-					 * Check if dot is valid.
-					 * Dot is valid if non of it's neighbroughs are invalid.
-					 * Also if current dot is part of double line or crossing
-					 * It also becomes invalid. Those checks are done in check_fault function
-					 */
+					//Check if matrix is valid
 					int_least8_t valid = check_fault(matrix, xx, yy);
 					if(valid == FALSE)
 					{
-						/*
-						 * If node is fault, all his ancestors in line are fault,
-						 *  return to them and set them to fault. All of it's ancestors
-						 *  are stored in queue.
-						 */
+						//If node is fault, all his ancestors in line are fault, return to them and set them to fault
 						printf("(%"PRIdLEAST8", %"PRIdLEAST8") is fault\n", xx, yy);
 						matrix[xx][yy].fault = TRUE;
-
-						/*
-						 * Iterate thorough queue and set all of ancestors to fault
-						 */
 						while((is_empty(queue)) == FALSE)
 						{
 							node_t node = dequeue(queue);
-							position_t* pos;
-							pos = (position_t*)node.el_value;
-							//position_t* pos = (position_t*)node.el_value;
+							position_t* pos = (position_t*)node.el_value;
 							matrix[pos->x][pos->y].fault = TRUE;
 						}
 						current_line_len = 0;
@@ -213,7 +181,7 @@ int_least8_t find_longest_line(dot_t** matrix, const int_least8_t width, const i
 					}
 					printf("(%"PRIdLEAST8", %"PRIdLEAST8") is not fault\n", xx, yy);
 
-					/* If dot is not already visited, push it to queue and increment line counter */
+
 					if(matrix[xx][yy].visited == FALSE)
 					{
 						printf("(%"PRIdLEAST8", %"PRIdLEAST8") pushed to queue\n", xx, yy);
@@ -226,39 +194,36 @@ int_least8_t find_longest_line(dot_t** matrix, const int_least8_t width, const i
 					}
 					matrix[xx][yy].visited = TRUE;
 
-					/* If got top unvisited neighbrough move to him */
+					//If got top unvisited neighbrough move to him
 					if((matrix[xx][yy - 1].value == 1) && (matrix[xx][yy - 1].visited == FALSE))
 					{
 						yy--;
 						continue;
 					}
-					/* If got right unvisited neighbrough move to him */
+					//If got right unvisited neighbrough move to him
 					if((matrix[xx + 1][yy].value == 1) && (matrix[xx + 1][yy].visited == FALSE))
 					{
 						xx++;
 						continue;
 					}
-					/* If got bottom unvisited neigbrough move to him */
+					//If got bottom unvisited neigbrough move to him
 					if((matrix[xx][yy + 1].value == 1) && (matrix[xx][yy + 1].visited == FALSE))
 					{
 						yy++;
 						continue;
 					}
-					/* If got right unvisited neighbrough move to him */
+					//If got right unvisited neighbrough move to him
 					if((matrix[xx - 1][yy].value == 1) && (matrix[xx - 1][yy].visited == FALSE))
 					{
 						xx--;
 						continue;
 					}
 
-					/*
-					 * If while got to this point that means there are no unvisited neighbroughs
-					 * try returning to first element and do same thing for him again
-					 */
+					/*If while got to this point that means there are no unvisited neighbroughs
+					 * try returning to first element and do same thing for him again */
 					if((is_empty(queue)) == FALSE && (done_jump == FALSE)) //If queue is not empty (Peek at front)
 					{
-						/*
-						 * Trying to go back to first dot (Entry point of current line)
+						/*Trying to go back to first dot (Entry point of current line)
 						 * Jump back is possible to do only once, because if there
 						 * is need for more, it is end of line and more than one jump would mean
 						 * that line has cross
@@ -271,24 +236,22 @@ int_least8_t find_longest_line(dot_t** matrix, const int_least8_t width, const i
 						continue;
 					}
 
-					/* Update longest line holder */
+					//Update longest line holder
 					if(current_line_len > max_line_len)
 					{
 						max_line_len = current_line_len;
 						current_line_len = 0;
 					}
 
-					/* Empty the queue so new dots can be inserted */
+					//Empty the queue so new dots can be inserted
 					empty_queue(queue);
 
-					/* Reached end for current loop */
 					break;
 				}
 			}
 		}
 	}
 
-	/* Free allocated queue */
 	delete_queue(queue);
 	return max_line_len;
 }
@@ -297,12 +260,9 @@ static int_least8_t check_text(FILE* fp)
 {
 	int_least8_t ret_val = TRUE;
 	char ch;
-	rewind(fp); /* Return file pointer to the begin of the file */
+	rewind(fp);
 	ch = fgetc(fp);
 
-	/*
-	 * Iterate through file and check all of characters in it
-	 */
 	while(ch != EOF)
 	{
 		if((ch != '0') && (ch != '1') && (ch  != '\n'))
@@ -324,21 +284,17 @@ dot_t** extend_matrix(dot_t** matrix, int_least8_t* width, int_least8_t* height)
 	int_least8_t old_width = *width;
 	int_least8_t old_height = *height;
 
-	/*
-	 * Increment both dimensions of matrix by 2
-	 * so it adds one collumn and row on each side of matrix
-	 */
 	*width += 2;
 	*height += 2;
 
-	/* Allocate memory for new matrix */
+	//Allocate memory for new matrix
 	new_matrix = (dot_t**)malloc(*width * sizeof(dot_t*));
 	for(i = 0; i < *width; i++)
 	{
 		new_matrix[i] = (dot_t*)malloc(*height * sizeof(dot_t));
 	}
 
-	/* Copy old matrix to new one */
+	//Copy old matrix to new one
 	for(y = 0; y < old_height; y++)
 	{
 		for(x = 0; x < old_width; x++)
@@ -347,13 +303,12 @@ dot_t** extend_matrix(dot_t** matrix, int_least8_t* width, int_least8_t* height)
 		}
 	}
 
-	/* Fill extended places with zeros, and set them to visited, so they won't be considered */
+	//Fill extended places with zeros, and set them to visited, so they won't be considered
 	for(y = 0; y < *height; y++)
 	{
 		for(x = 0; x < *width; x++)
 		{
-			/* If dot is outside of old matrix, fill it with zero and put them to visited */
-			if((x == 0) || (y == 0) || (x == *width - 1) || (y == *height - 1))
+			if((x == 0) || (y == 0) || (x == *width - 1) || (y == *height - 1)) //If it's out of old matrix
 			{
 				new_matrix[x][y].value = 0;
 				new_matrix[x][y].visited = TRUE;
@@ -362,7 +317,7 @@ dot_t** extend_matrix(dot_t** matrix, int_least8_t* width, int_least8_t* height)
 		}
 	}
 
-	/* Free old matrix */
+	//Free old matrix
 	for(i = 0; i < old_width; i++)
 	{
 		free(matrix[i]);
@@ -377,76 +332,76 @@ static int_least8_t check_fault(dot_t** matrix, int_least8_t x, int_least8_t y)
 	int_least8_t ret_val = TRUE;
 	int_least8_t neighbrough_count = 0;
 
-	/* Dot itself is fault if one of her neighbroughs is fault */
-	if(matrix[x][y - 1].fault == TRUE) /* UP */
+	//Dot itself is fault if one of her neighbroughs is fault
+	if(matrix[x][y - 1].fault == TRUE) //UP
 	{
 		ret_val = FALSE;
 	}
-	else if(matrix[x + 1][y].fault == TRUE) /* LEFT */
+	else if(matrix[x + 1][y].fault == TRUE) //LEFT
 	{
 		ret_val = FALSE;
 	}
-	else if(matrix[x][y + 1].fault == TRUE) /* DOWN */
+	else if(matrix[x][y + 1].fault == TRUE) //DOWN
 	{
 		ret_val = FALSE;
 	}
-	else if(matrix[x - 1][y].fault == TRUE) /* RIGHT */
+	else if(matrix[x - 1][y].fault == TRUE) //RIGHT
 	{
 		ret_val = FALSE;
 	}
 
-	/* Check all neighbrouhs (UP, LEFT, DOWN, RIGHT) */
-	if(matrix[x][y - 1].value == 1) /* UP */
+	//Check all neighbrouhs (UP, LEFT, DOWN, RIGHT)
+	if(matrix[x][y - 1].value == 1) //UP
 	{
 		neighbrough_count++;
 	}
 
-	if(matrix[x + 1][y].value == 1) /* RIGHT */
+	if(matrix[x + 1][y].value == 1) //RIGHT
 	{
 		neighbrough_count++;
 	}
 
-	if(matrix[x][y + 1].value == 1) /* DOWN */
+	if(matrix[x][y + 1].value == 1) //DOWN
 	{
 		neighbrough_count++;
 	}
 
-	if(matrix[x - 1][y].value == 1) /* LEFT */
+	if(matrix[x - 1][y].value == 1) //LEFT
 	{
 		neighbrough_count++;
 	}
 
-	/* If exactly 2 neighbroughs, check diagonaly */
+	//If exactly 2 neighbroughs, check diagonaly
 	if(neighbrough_count == 2)
 	{
-		/* If there are up and right neighbroughs check top right */
+		//If there are up and right neighbroughs check top right
 		if((matrix[x][y - 1].value == 1) && (matrix[x + 1][y].value == 1))
 		{
-			if(matrix[x + 1][y - 1].value == 1) /* TOP RIGHT */
+			if(matrix[x + 1][y - 1].value == 1) //TOP RIGHT
 			{
 				neighbrough_count++;
 			}
 		}
-		/* If there are right and bottom neighbrough check bottom right */
+		//If there are right and bottom neighbrough check bottom right
 		if((matrix[x + 1][y].value == 1) && (matrix[x][y + 1].value == 1))
 		{
-			if(matrix[x + 1][y + 1].value == 1) /* DOWN RIGHT */
+			if(matrix[x + 1][y + 1].value == 1) //DOWN RIGHT
 			{
 				neighbrough_count++;
 			}
 		}
-		/* If there are left and bottom neighbrough check bottom left */
+		//If there are left and bottom neighbrough check bottom left
 		if((matrix[x - 1][y].value == 1) && (matrix[x][y + 1].value == 1))
 		{
-			if(matrix[x - 1][y + 1].value == 1) /* DOWN LEFT */
+			if(matrix[x - 1][y + 1].value == 1) //DOWN LEFT
 			{
 				neighbrough_count++;
 			}
 		}
-		/* If there are left and top neighbrough check top left */
+		//If there are left and top neighbrough check top left
 		if((matrix[x - 1][y].value == 1) && (matrix[x][y - 1].value == 1))
 		{
-			if(matrix[x - 1][y - 1].value == 1) /* DOWN RIGHT */
+			if(matrix[x - 1][y - 1].value == 1) //DOWN RIGHT
 			{
 				neighbrough_count++;
 			}
@@ -454,7 +409,7 @@ static int_least8_t check_fault(dot_t** matrix, int_least8_t x, int_least8_t y)
 
 	}
 
-	/* If total neighbrough count is more than 3 it's not valid */
+	//If total neighbrough count is more than 3 it's not valid
 	if(neighbrough_count >= 3)
 	{
 		ret_val = FALSE;
